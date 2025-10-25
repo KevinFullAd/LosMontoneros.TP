@@ -1,0 +1,56 @@
+:host {
+    display: block;
+    font-family: system-ui;
+    color: #222;
+    background: #f9f9f9;
+    min-height: 100vh;
+}
+
+.app-header {
+    text-align: center;
+    padding: 20px;
+    border-bottom: 1px solid #ddd;
+}
+
+.app-logo {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+}
+
+.app-title {
+    margin: 10px 0 4px;
+    font-size: 1.4rem;
+}
+
+.app-subtitle {
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.welcome-content {
+    text-align: center;
+    padding: 40px 20px;
+}
+
+#welcome-form {
+    margin-top: 20px;
+}
+
+#welcome-form input {
+    padding: 10px;
+    font-size: 1rem;
+    width: 220px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+#welcome-form button {
+    margin-left: 10px;
+    padding: 10px 16px;
+    background: #1976d2;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
