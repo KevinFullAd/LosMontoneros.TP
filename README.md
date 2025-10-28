@@ -1,4 +1,4 @@
-Contenido completo para tu **`README.md`** en el repositorio:
+@@Contenido completo para tu **`README.md`** en el repositorio:
 
 ---
 
@@ -53,13 +53,25 @@ El backend sirve automáticamente el **frontend** desde esa ruta.
 LosMontoneros.TP/
 │
 ├── frontend/
-│   └── src/
-│       ├── index.html          ← punto de entrada del cliente
-│       ├── app.js              ← router y lógica principal del frontend
-│       └── features/           ← vistas separadas (welcome, productos, etc.)
+|   ├── servidor_mvc/           ← contiene archivos, bin, controllers, models, public, routes y views.
+|   |
+│   ├── src/
+│   |    ├── index.html          ← punto de entrada del cliente
+│   |    ├── app.js              ← router y lógica principal del frontend
+│   |    ├── features/           ← vistas separadas (welcome, productos, etc.)
+|   |    └── components           ← contiene un navbar
+|   |
+|   ├── package-lock.json
+|   └── package.json    
 │
 └── backend/
+    ├── package-lock.json
     ├── package.json            ← configuración de dependencias
+    ├── config
+    ├── database
+    ├── models
+    ├── node_modules
+    ├── servidor_mvc
     └── src/
         ├── server.js           ← servidor Express
         ├── config/
@@ -125,9 +137,9 @@ El backend funciona correctamente con Sequelize 6.x.
 
 **Los Montoneros – Programación III**
 
-* Facundo Damian Fernandez
 * Kevin Damian Paniagua
+* Facundo Damian Fernandez
 
 ---
 
-¿Querés que el README incluya también un apartado “Cómo contribuir” con los pasos para que tu compañero agregue endpoints nuevos sin romper la estructura?
+¿Querés que el README incluya también un apartado "Cómo contribuir" con los pasos para que tu compañero agregue endpoints nuevos sin romper la estructura?
