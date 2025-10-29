@@ -2,6 +2,7 @@ import { mountWelcome } from "./features/welcome/welcome.js";
 import { mountMaintenance } from "./features/maintenance/maintenance.js";
 import { mountProductos } from "./features/productos/productos.js";
 import { mountCarrito } from "./features/carrito/carrito.js";
+import { mountTicket } from "./features/ticket/ticket.js";
 
 import { getPreferredTheme, setTheme, connectThemeButton } from "./features/shared/theme.js";
 
@@ -55,6 +56,16 @@ function logout() {
 
   // Redirigir al inicio
   navigate("/inicio");
+}
+
+function restartApp() {
+    console.log("Reiniciando aplicación...");
+    localStorage.removeItem("user_name");
+    localStorage.removeItem("carrito");
+    carrito = []; // Resetea el estado en memoria
+
+    actualizarContadorCarrito(); // Actualiza el contador (lo pone en 0)
+    navigate("/inicio"); // Vuelve al inicio
 }
 
 /* ===================== ROUTER Y NAVEGACIÓN ===================== */
@@ -140,6 +151,11 @@ function route(path) {
     case "/carrito":
       mountCarrito(currentViewContainer, {
         onRemove: eliminarProductoDelCarrito, // ¡Pasamos la función!
+      });
+      break;
+    case "/ticket":
+      mountTicket(currentViewContainer, {
+        onRestart: restartApp 
       });
       break;
     case "/trabajando":
