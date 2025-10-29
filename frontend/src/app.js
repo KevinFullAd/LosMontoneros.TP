@@ -41,6 +41,27 @@ function eliminarProductoDelCarrito(productId) {
   actualizarContadorCarrito();
 }
 
+/**
+ * Disminuye en 1 la cantidad de un producto en el carrito.
+ * Si la cantidad llega a 0, lo elimina.
+ */
+function disminuirCantidadDelCarrito(productId) {
+  // Buscamos el item en el estado local 'carrito'
+  const itemEnCarrito = carrito.find((item) => item.id === productId);
+
+  if (!itemEnCarrito) return; // No debería pasar si el botón está en pantalla
+
+  if (itemEnCarrito.cantidad > 1) {
+    // Si hay más de 1, solo restamos
+    itemEnCarrito.cantidad--;
+    localStorage.setItem("carrito", JSON.stringify(carrito));
+    actualizarContadorCarrito();
+  } else {
+     // Si solo queda 1, llamamos a la función de eliminar
+    eliminarProductoDelCarrito(productId);
+  }
+}
+
 /* ===================== MANEJO DE AUTENTICACIÓN (Auth) ===================== */
 
 /**
@@ -150,7 +171,9 @@ function route(path) {
       break;
     case "/carrito":
       mountCarrito(currentViewContainer, {
-        onRemove: eliminarProductoDelCarrito, // ¡Pasamos la función!
+        onRemove: eliminarProductoDelCarrito, 
+        onAdd: agregarProductoAlCarrito,      
+        onDecrease: disminuirCantidadDelCarrito
       });
       break;
     case "/ticket":

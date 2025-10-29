@@ -131,3 +131,42 @@
     text-decoration: none;
     border-radius: 5px;
 }
+
+.cart-item-quantity {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem; /* Espacio entre botones y número */
+}
+
+.cart-item-quantity span {
+    min-width: 20px;
+    text-align: center;
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+.quantity-btn {
+    background-color: var(--primary-color);
+    color: var(--primary-text);
+    border: none;
+    border-radius: 50%; /* Botones redondos */
+    width: 30px;
+    height: 30px;
+    font-size: 1.3rem;
+    font-weight: bold;
+    cursor: pointer;
+    line-height: 28px; /* Ajuste vertical del texto */
+    text-align: center;
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+.quantity-btn:hover {
+    opacity: 0.85;
+}
+.quantity-btn:active {
+    transform: scale(0.95);
+}
+
+.quantity-btn.btn-decrease {
+    background-color: #6c757d; /* Gris (Bootstrap secondary) */
+}

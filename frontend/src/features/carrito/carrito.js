@@ -18,8 +18,12 @@ function renderCartItems(detailedCart, container) {
                     <p>Precio unitario: $${item.precio.toFixed(2)}</p>
                 </div>
                 <div class="cart-item-details">
-                    <p>Cantidad: ${item.cantidad}</p>
-                    <div class="cart-item-price">
+                    <div class="cart-item-quantity">
+                        <button class="quantity-btn btn-decrease" data-id="${item.id}">-</button>
+                        <span>${item.cantidad}</span>
+                        <button class="quantity-btn btn-increase" data-id="${item.id}">+</button>
+                    </div>
+                    <div class="cart-item-price">
                         <strong>$${itemTotal.toFixed(2)}</strong>
                     </div>
                     <button class="cart-item-remove" data-id="${item.id}">Eliminar</button>
@@ -43,14 +47,28 @@ function renderSummary(detailedCart, totalEl) {
  */
 function attachEventListeners(container) {
     container.addEventListener('click', (e) => {
-        if (e.target.classList.contains('cart-item-remove')) {
-            const id = e.target.dataset.id;
-            // 1. Llama a la función de app.js
-            if (propsGlobales.onRemove) {
-                propsGlobales.onRemove(id);
+        const target = e.target;
+        const id = target.dataset.id;
+
+        if(!id) return;
+
+        if(target.classList.contains('cart-item-remove')){
+            if(propsGlobales.onRemove){
+                propsGlobales.onRemove(id);
+            }
+            loadCartData();
+        }
+        if (target.classList.contains('btn-increase')) {
+            if (propsGlobales.onAdd) {
+                propsGlobales.onAdd(id);
             }
-            // 2. Vuelve a cargar la vista del carrito
-            loadCartData(); 
+            loadCartData();
+        }
+        if (target.classList.contains('btn-decrease')) {
+            if (propsGlobales.onDecrease) {
+                propsGlobales.onDecrease(id);
+            }
+            loadCartData();
         }
     });
 }
