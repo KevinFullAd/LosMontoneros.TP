@@ -1,6 +1,7 @@
 import { mountWelcome } from "./features/welcome/welcome.js";
 import { mountMaintenance } from "./features/maintenance/maintenance.js";
 import { mountProductos } from "./features/productos/productos.js";
+import { mountCarrito } from "./features/carrito/carrito.js";
 
 import { getPreferredTheme, setTheme, connectThemeButton } from "./features/shared/theme.js";
 
@@ -137,8 +138,9 @@ function route(path) {
       });
       break;
     case "/carrito":
-      currentViewContainer.innerHTML =
-        "<h2>Página del Carrito (en construcción)</h2>";
+      mountCarrito(currentViewContainer, {
+        onRemove: eliminarProductoDelCarrito, // ¡Pasamos la función!
+      });
       break;
     case "/trabajando":
       mountMaintenance(currentViewContainer, {

@@ -57,7 +57,7 @@ async function startServer() {
         // force: false -> Crea las tablas si no existen, pero NO las borra si ya existen.
         // Es la opción segura para producción y para tus datos reales.
         await sequelize.sync({ force: false }); 
-        console.log('Base de datos sincronizada correctamente. (Tablas creadas si no existían)');
+        console.log('Base de datos sincronizada correctamente.');
 
         // 2. Iniciar el servidor
         app.listen(PORT, () => {

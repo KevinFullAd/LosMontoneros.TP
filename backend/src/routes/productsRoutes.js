@@ -1,10 +1,12 @@
 import express from 'express';
-import { getAllProducts } from '../controllers/productsController.js';
+import { getAllProducts, getProductById } from '../controllers/productsController.js';
 
 const router = express.Router();
 
 // GET /api/products
 router.get('/', getAllProducts);
+
+router.get('/:id', getProductById);
 
 // Aquí puedes agregar más rutas como:
 // router.post('/', createProduct);

@@ -30,3 +30,22 @@ export async function getAllProducts(req, res) {
         res.status(500).json({ message: 'Error al obtener productos', error: error.message });
     }
 }
+
+export async function getProductById(req, res) {
+    try {
+        const { id } = req.params;
+        const producto = await Producto.findOne({
+            where: { id: id, activo: true } 
+        });
+
+        if (!producto) {
+            return res.status(404).json({ message: 'Producto no encontrado o inactivo' });
+        }
+
+        res.json(producto);
+
+    } catch (error) {
+        console.error('Error detallado en getProductById:', error);
+        res.status(500).json({ message: 'Error al obtener el producto', error: error.message });
+    }
+}
