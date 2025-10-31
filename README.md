@@ -1,7 +1,3 @@
-@@Contenido completo para tu **`README.md`** en el repositorio:
-
----
-
 # Los Montoneros TP – Backend + Frontend
 
 ## 📖 Descripción

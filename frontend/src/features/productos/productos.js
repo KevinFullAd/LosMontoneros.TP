@@ -1,17 +1,12 @@
-// --- Variables de estado y props ---
 let currentCategoria = null;
 let currentPage = 1;
 let propsGlobales = {}; // Para guardar las 'props' (ej: onAgregar)
-
-// --- Lógica de la vista (casi sin cambios) ---
-// (Estas funciones son llamadas por mountProductos)
 
 // 1. Cargar y Renderizar Datos
 async function cargarProductos(categoria = null, page = 1) {
     currentCategoria = categoria;
     currentPage = page;
     
-    // La ruta de la API que ya corregimos
     let url = `/api/productos?page=${page}&limit=9`; 
     if (categoria) url += `&categoria=${categoria}`;
 
@@ -25,7 +20,6 @@ async function cargarProductos(categoria = null, page = 1) {
         
     } catch (error) {
         console.error('Error al cargar productos:', error);
-        // Aquí llamas a tu modal/alert de error
         const productList = document.getElementById('product-list');
         if (productList) {
             productList.innerHTML = `<p class="text-danger">Error al cargar productos.</p>`;
@@ -53,6 +47,7 @@ function renderProductos(productos) {
                     <img src="${producto.imagen || 'https://placehold.co/600x400/eee/aaa?text=Sin+Imagen'}" class="card-img-top" alt="${producto.nombre}">
                     <div class="card-body d-flex flex-column">
                         <h5 class="card-title">${producto.nombre}</h5>
+                        <p class="card-text">${producto.descripcion || ''}</p>
                         <p class="card-text mt-auto mb-2">$${producto.precio.toFixed(2)}</p>
                         <button class="btn btn-primary btn-agregar" data-product-id="${producto.id}">Agregar</button>
                     </div>

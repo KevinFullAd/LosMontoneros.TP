@@ -1,12 +1,11 @@
 import { Producto } from '../models/producto.js';
 
-// Controlador básico
 export async function getAllProducts(req, res) {
     try {
         const { categoria, page = 1, limit = 10 } = req.query;
         
         const options = {
-            where: { activo: true }, // Requerimiento 3 (solo activos)
+            where: { activo: true },
             limit: parseInt(limit),
             offset: (parseInt(page) - 1) * parseInt(limit)
         };
@@ -15,7 +14,6 @@ export async function getAllProducts(req, res) {
             options.where.categoria = categoria; // Requerimiento 2
         }
 
-        // findAndCountAll es ideal para paginación
         const { count, rows } = await Producto.findAndCountAll(options);
 
         res.json({

@@ -120,3 +120,43 @@
 [data-theme="dark"] .pagination .page-item.disabled .page-link {
   color: #555;
 }
+
+.productos-container .card {
+    height: 100%; /* Ajuste para que la tarjeta ocupe el espacio de su columna */
+}
+
+.productos-container .card-img-top {
+    width: 100%;       /* Ocupa todo el ancho disponible de la tarjeta */
+    height: 200px;     /* <--- ALTURA FIJA: Define la altura que deseas para todas las imágenes */
+    object-fit: cover; /* <--- CLAVE: Recorta la imagen para que cubra el área sin distorsionarla */
+    object-position: center center; /* Centra la imagen dentro del contenedor */
+    background-color: #f0f0f0;  /* Para ver el fondo si la imagen no carga o es transparente */
+    border-bottom: 1px solid #eee;
+}
+
+.productos-container .card-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between; /* Empuja el botón al final si hay espacio */
+    padding: 15px;
+}
+
+/* Asegura que la descripción no tome demasiado espacio si es muy larga */
+.productos-container .card-title + .card-text {
+    font-size: 0.9rem;     /* Letra más chica (aprox 14px si tu base es 16px) */
+    font-weight: 400;      /* Peso normal (400 es el estándar, no-negrita) */
+    color: #6c757d;      /* Un color gris (secundario) para que no sea tan fuerte */
+    margin-bottom: 1rem;
+}
+
+/* Asegura que el precio tenga espacio y el botón se alinee bien */
+.productos-container .card-text.mt-auto {
+    margin-top: auto !important; /* Mantiene el margin-top auto para empujar hacia abajo */
+    margin-bottom: 10px !important; /* Espacio antes del botón */
+    font-weight: bold;
+    font-size: 1.1em;
+}
+
+.productos-container .btn-agregar {
+    width: 100%;
+}

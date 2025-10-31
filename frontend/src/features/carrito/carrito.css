@@ -170,3 +170,11 @@
 .quantity-btn.btn-decrease {
     background-color: #6c757d; /* Gris (Bootstrap secondary) */
 }
+#confirmarCompraModal .modal-content {
+    color: #212529; /* Este es el color de texto oscuro estándar de Bootstrap */
+}
+
+/* Opcional: Si el título sigue viéndose mal, fuerza también este */
+#confirmarCompraModal .modal-title {
+    color: #212529;
+}
