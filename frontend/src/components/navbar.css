@@ -1,15 +1,13 @@
 #app-navbar {
-  /* El navbar usará 'card-bg' que cambia con el tema */
   background-color: var(--card-bg) !important;
   border-bottom: 1px solid var(--border-color);
   box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
 [data-theme="dark"] #app-navbar {
-   box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.3);
 }
 
-/* Ajusta los links del navbar */
 #app-navbar .navbar-brand,
 #app-navbar .nav-link,
 #app-navbar .navbar-text {
@@ -20,7 +18,6 @@
   color: var(--primary-color) !important;
 }
 
-/* Ajusta el botón del tema */
 #theme-toggle-btn {
   color: var(--text-color);
   border-color: var(--border-color);

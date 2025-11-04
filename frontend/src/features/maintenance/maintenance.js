@@ -1,8 +1,5 @@
-// /src/features/maintenance/maintenance.js
-
 export function mountMaintenance(root, { onReturn, error } = {}) {
     const shadow = root; 
-
 
     Promise.all([
         fetch('./features/maintenance/maintenance.html').then(r => r.text()),

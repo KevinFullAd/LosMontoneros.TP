@@ -1,6 +1,6 @@
 let currentCategoria = null;
 let currentPage = 1;
-let propsGlobales = {}; // Para guardar las 'props' (ej: onAgregar)
+let propsGlobales = {};
 
 // 1. Cargar y Renderizar Datos
 async function cargarProductos(categoria = null, page = 1) {
