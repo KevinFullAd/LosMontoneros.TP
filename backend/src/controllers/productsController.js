@@ -1,3 +1,4 @@
+//productsController.js
 import Producto from '../models/Producto.js';
 
 export const listProducts = async (req, res) => {

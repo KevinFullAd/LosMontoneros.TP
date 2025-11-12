@@ -1,0 +1,61 @@
+<!-- form_usuario -->
+<header class="mb-4">
+    <h2 class="h4 mb-0">
+        <%= usuario ? 'Editar administrador' : 'Nuevo administrador' %>
+    </h2>
+</header>
+
+<form id="adminForm" class="card shadow-sm p-4">
+    <div class="mb-3">
+        <label class="form-label">Correo electrónico</label>
+        <input type="email" name="email" class="form-control" value="<%= usuario?.email || '' %>" required>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Contraseña <%= usuario ? '(opcional)' : '' %></label>
+        <input type="password" name="password" class="form-control" <%=usuario ? '' : 'required' %>>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Rol</label>
+        <select name="rol" class="form-select">
+            <option value="admin" <%=usuario?.rol==='admin' ? 'selected' : '' %>>Administrador</option>
+            <option value="superadmin" <%=usuario?.rol==='superadmin' ? 'selected' : '' %>>Superadministrador</option>
+        </select>
+    </div>
+
+    <div class="text-end">
+        <button type="submit" class="btn btn-success">
+            <i class="bi bi-save me-1"></i>
+            <%= usuario ? 'Guardar cambios' : 'Crear' %>
+        </button>
+        <a href="/admin/usuarios" class="btn btn-outline-secondary">Cancelar</a>
+    </div>
+</form>
+
+<script>
+    document.getElementById("adminForm").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const form = e.target;
+        const data = Object.fromEntries(new FormData(form).entries());
+        const url = "<%= usuario ? `/admin/usuarios/${usuario.id}` : '/admin/usuarios' %>";
+
+        try {
+            const res = await fetch(url, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data)
+            });
+
+            if (res.ok) {
+                await Swal.fire({ icon: "success", title: "Éxito", text: "Administrador guardado correctamente", timer: 1500, showConfirmButton: false });
+                window.location.href = "/admin/usuarios";
+            } else {
+                const err = await res.json();
+                showAlert("error", "Error", err.error || "No se pudo guardar el administrador");
+            }
+        } catch {
+            showAlert("error", "Error", "Error interno del servidor");
+        }
+    });
+</script>

@@ -1,28 +1,113 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
-    <meta charset="utf-8">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>
-        <%= title || 'Panel' %>
+        <%= title || 'Panel Administrativo' %>
     </title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+    <style>
+        body {
+            background-color: #f5f6fa;
+            font-family: "Segoe UI", sans-serif;
+        }
+
+        .sidebar {
+            width: 250px;
+            min-height: 100vh;
+            background-color: #1e3c72;
+            color: white;
+            position: fixed;
+            top: 0;
+            left: 0;
+        }
+
+        .sidebar a {
+            color: white;
+            text-decoration: none;
+        }
+
+        .sidebar a:hover {
+            background-color: #2a5298;
+            border-radius: 8px;
+        }
+
+        main {
+            margin-left: 250px;
+            padding: 2rem;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        footer {
+            margin-top: auto;
+            text-align: center;
+            color: #777;
+            font-size: 0.9rem;
+            padding-top: 1rem;
+        }
+    </style>
 </head>
 
 <body>
-    <aside class="sidebar p-3 bg-dark text-white">
-        <h1 class="fs-4">Panel</h1>
-        <nav class="nav flex-column">
-            <a class="nav-link text-white" href="/admin/dashboard">Dashboard</a>
-            <a class="nav-link text-white" href="/admin/productos/nuevo">Crear producto</a>
-            <a class="nav-link text-white" href="/admin/compras">Compras</a>
-            <a class="nav-link text-white" href="/admin/usuarios">Usuarios</a>
+    <aside class="sidebar p-3">
+        <h1 class="fs-4 mb-3">Panel</h1>
+        <nav class="nav flex-column gap-1">
+            <a class="nav-link text-white" href="/admin/dashboard"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a>
+            <a class="nav-link text-white" href="/admin/productos/nuevo"><i class="bi bi-box-seam me-2"></i>Crear
+                producto</a>
+            <a class="nav-link text-white" href="/admin/ventas"><i class="bi bi-cart-check me-2"></i>Ventas</a>
+            <a class="nav-link text-white" href="/admin/usuarios"><i class="bi bi-person-gear me-2"></i>Usuarios</a>
+            <a class="nav-link text-white" href="/admin/logout"><i class="bi bi-box-arrow-right me-2"></i>Salir</a>
         </nav>
     </aside>
 
-    <main class="p-4">
-        <%- body %> <!-- contenido dinámico -->
+    <main>
+        <%- body %>
+            <footer class="border-top mt-4 pt-3">
+                <small>&copy; <%= new Date().getFullYear() %> Los Montoneros — Panel administrativo</small>
+            </footer>
     </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="/js/admin-dashboard.js" defer></script>
+
+    <script>
+        // 💬 Función global de alertas
+        window.showAlert = (type, title, text) => {
+            const icons = { success: "success", error: "error", info: "info", warning: "warning" };
+            Swal.fire({
+                icon: icons[type] || "info",
+                title,
+                text,
+                confirmButtonColor: "#1e3c72",
+                timer: type === "success" ? 1500 : undefined,
+                showConfirmButton: type !== "success"
+            });
+        };
+
+        // 💬 Detectar mensajes enviados vía querystring (?success=...)
+        const params = new URLSearchParams(window.location.search);
+        const map = {
+            producto_creado: ["success", "Producto creado", "El producto fue agregado correctamente."],
+            producto_actualizado: ["success", "Producto actualizado", "Los cambios se guardaron correctamente."],
+            admin_creado: ["success", "Administrador creado", "El usuario fue agregado correctamente."],
+            admin_actualizado: ["success", "Administrador actualizado", "Los cambios se guardaron correctamente."],
+            venta_creada: ["success", "Venta registrada", "La venta fue registrada correctamente."],
+            error: ["error", "Error", "Ocurrió un problema al procesar la solicitud."]
+        };
+        if (params.get("success") && map[params.get("success")]) {
+            showAlert(...map[params.get("success")]);
+        }
+    </script>
 </body>
+
 </html>

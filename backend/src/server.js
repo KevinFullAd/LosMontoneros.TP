@@ -13,6 +13,7 @@ import bcrypt from 'bcrypt';
 import UsuarioAdmin from './models/UsuarioAdmin.js';
 import expressLayouts from 'express-ejs-layouts';
 import methodOverride from 'method-override';
+import setLocalsAdmin from "./middlewares/setLocalsAdmin.js";
 
 // ===============================
 // 🔧 Cargar configuración .env
@@ -60,6 +61,8 @@ app.use(session({
 // ===============================
 // 🖼 Configuración de vistas (EJS)
 // ===============================
+app.use(setLocalsAdmin);
+
 const viewsPath = path.resolve(__dirname, '..', process.env.VIEWS_PATH);
 app.set('views', viewsPath);
 app.set('view engine', process.env.VIEW_ENGINE || 'ejs');
@@ -101,9 +104,8 @@ console.log(`📦 Sirviendo archivos estáticos de admin desde: ${publicPath}`);
 // ===============================
 // 📡 Rutas API
 // ===============================
-import apiRoutes from './routes/routes.js';
-app.use('/admin', (await import('./routes/adminViewRoutes.js')).default);
-app.use('/api', apiRoutes);
+import routes from './routes/routes.js';
+app.use("/", routes); // ✅ aquí se monta todo (admin, api, productos, ventas)
 
 // ===============================
 // 🌐 Servir frontend (SPA)
@@ -129,20 +131,25 @@ app.get('*', (req, res) => {
 // ===============================
 async function startServer() {
     try {
-        if (process.env.SEQUELIZE_FORCE_SYNC === 'true') {
-            await sequelize.sync({ force: true });
-            console.log('💾 Base de datos sincronizada (force: true)');
+        // Sincroniza la BD sin eliminar tablas existentes
+        await sequelize.sync();
+        console.log('💾 Base de datos sincronizada (sin eliminar datos)');
 
-            // Crear admin por defecto
-            const hash = await bcrypt.hash(process.env.ADMIN_PASSWORD, 10);
+        // Verificar si existe el usuario admin por defecto
+        const adminEmail = process.env.ADMIN_EMAIL;
+        const adminPassword = process.env.ADMIN_PASSWORD;
+
+        const adminExists = await UsuarioAdmin.findOne({ where: { email: adminEmail } });
+
+        if (!adminExists) {
+            const hash = await bcrypt.hash(adminPassword, 10);
             await UsuarioAdmin.create({
-                email: process.env.ADMIN_EMAIL,
+                email: adminEmail,
                 password_hash: hash
             });
             console.log('👤 Usuario admin creado por defecto');
         } else {
-            await sequelize.sync();
-            console.log('💾 Base de datos sincronizada (normal)');
+            console.log('✅ Usuario admin ya existente');
         }
 
         app.listen(PORT, () => {

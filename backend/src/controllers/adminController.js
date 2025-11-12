@@ -1,226 +1,149 @@
-import bcrypt from 'bcrypt';
-import UsuarioAdmin from '../models/UsuarioAdmin.js';
-import { Producto } from '../associations.js';
+//AdminController.js
+import bcrypt from "bcrypt";
+import UsuarioAdmin from "../models/UsuarioAdmin.js";
 
 export async function login(req, res) {
     try {
         const { email, password } = req.body;
 
         if (!email || !password) {
-            return res.status(400).render('admin/login', {
-                error: 'Faltan datos para iniciar sesión',
+            return res.status(400).render("admin/login", {
+                layout: false,
+                title: "Iniciar sesión",
+                error: "Faltan datos para iniciar sesión",
             });
         }
 
         const admin = await UsuarioAdmin.findOne({ where: { email } });
-
         if (!admin) {
-            return res.status(401).render('admin/login', {
-                error: 'Credenciales inválidas',
+            return res.status(401).render("admin/login", {
+                layout: false,
+                title: "Iniciar sesión",
+                error: "Credenciales inválidas",
             });
         }
 
-        const ok = await bcrypt.compare(password, admin.password_hash);
-        if (!ok) {
-            return res.status(401).render('admin/login', {
-                error: 'Credenciales inválidas',
+        const valid = await bcrypt.compare(password, admin.password_hash);
+        if (!valid) {
+            return res.status(401).render("admin/login", {
+                layout: false,
+                title: "Iniciar sesión",
+                error: "Credenciales inválidas",
             });
         }
 
-        // 🟢 Guardar datos en sesión
         req.session.adminId = admin.id;
         req.session.adminEmail = admin.email;
 
-        console.log(`Admin logueado: ${admin.email}`);
-        return res.redirect('/admin/dashboard');
-    } catch (error) {
-        console.error('Error en login admin:', error);
-        res.status(500).render('admin/login', {
-            error: 'Error interno del servidor',
+        res.redirect("/admin/dashboard");
+    } catch (err) {
+        console.error("Error en login admin:", err);
+        res.status(500).render("admin/login", {
+            layout: false,
+            title: "Iniciar sesión",
+            error: "Error interno del servidor",
         });
     }
 }
 
+/** LOGOUT */
 export function logout(req, res) {
-    req.session.destroy(err => {
-        if (err) {
-            console.error('Error al cerrar sesión:', err);
-            return res.status(500).send('Error al cerrar sesión');
-        }
-        res.redirect('/admin/login');
-    });
+    req.session.destroy(() => res.redirect("/admin/login"));
 }
 
-export async function loginAPI(req, res) {
+/** CREAR ADMIN */
+export async function crearAdmin(req, res) {
     try {
-        const { email, password } = req.body;
+        const { email, password, rol } = req.body;
 
-        if (!email || !password)
-            return res.status(400).json({ error: 'Faltan datos para iniciar sesión' });
-
-        const admin = await UsuarioAdmin.findOne({ where: { email } });
-        if (!admin)
-            return res.status(401).json({ error: 'Credenciales inválidas' });
-
-        const ok = await bcrypt.compare(password, admin.password_hash);
-        if (!ok)
-            return res.status(401).json({ error: 'Credenciales inválidas' });
-
-        // Guardar sesión igual que en el login EJS
-        req.session.adminId = admin.id;
-        req.session.adminEmail = admin.email;
-
-        console.log(`✅ Admin logueado vía API: ${admin.email}`);
-
-        return res.json({
-            message: 'Inicio de sesión exitoso',
-            admin: {
-                id: admin.id,
-                email: admin.email
-            }
-        });
-    } catch (error) {
-        console.error('💥 Error en login API admin:', error);
-        res.status(500).json({ error: 'Error interno del servidor' });
-    }
-}
-
-export async function crearProducto(req, res) {
-    try {
-        // Los datos vienen del formulario EJS
-        const { nombre, descripcion, precio, imagen, categoria } = req.body;
-
-        // Validaciones básicas (puedes agregar más)
-        if (!nombre || !precio) {
-            // Si algo falla, re-renderiza el formulario con un error
-            return res.status(400).render('admin/form_producto', {
-                error: 'Nombre y Precio son obligatorios',
-                producto: req.body // Devuelve los datos para no perderlos
+        if (!email || !password) {
+            return res.status(400).render("admin/form_usuario", {
+                layout: "admin/layout",
+                title: "Nuevo administrador",
+                error: "Faltan campos obligatorios",
+                usuario: req.body
             });
         }
 
-        // Crea el producto en la base de datos
-        const nuevoProducto = await Producto.create({
-            nombre,
-            descripcion,
-            precio: parseFloat(precio),
-            imagen,
-            categoria,
-            activo: true // O el valor por defecto que prefieras
-        });
-
-        console.log(`✅ Producto creado: ${nuevoProducto.nombre}`);
-
-        // Como es un formulario HTML, redirigimos al dashboard
-        res.redirect('/admin/dashboard');
-
-    } catch (error) {
-        console.error('💥 Error al crear producto:', error);
-        res.status(500).render('admin/form_producto', {
-            error: 'Error interno del servidor',
-            producto: req.body
-        });
-    }
-}
-
-/**
- * Actualiza un producto existente.
- * Responde con una redirección al dashboard.
- */
-export async function actualizarProducto(req, res) {
-    try {
-        const { id } = req.params;
-        const { nombre, descripcion, precio, imagen, categoria } = req.body;
-
-        const producto = await Producto.findByPk(id);
-        if (!producto) {
-            return res.status(404).render('admin/form_producto', {
-                error: 'Producto no encontrado',
-                producto: req.body
+        const existe = await UsuarioAdmin.findOne({ where: { email } });
+        if (existe) {
+            return res.status(409).render("admin/form_usuario", {
+                layout: "admin/layout",
+                title: "Nuevo administrador",
+                error: "El correo ya está registrado",
+                usuario: req.body
             });
         }
 
-        // Actualiza el producto
-        await producto.update({
-            nombre,
-            descripcion,
-            precio: parseFloat(precio),
-            imagen,
-            categoria
-        });
+        const password_hash = await bcrypt.hash(password, 10);
+        await UsuarioAdmin.create({ email, password_hash, rol: rol || "admin" });
 
-        console.log(`✅ Producto actualizado: ${producto.nombre}`);
-
-        // Redirigimos al dashboard
-        res.redirect('/admin/dashboard');
-
-    } catch (error) {
-        console.error('💥 Error al actualizar producto:', error);
-        res.status(500).render('admin/form_producto', {
-            error: 'Error interno del servidor',
-            producto: { ...req.body, id } // Devuelve los datos
+        console.log(`✅ Administrador creado: ${email}`);
+        res.redirect("/admin/usuarios"); // 🔁 redirige a la lista
+    } catch (err) {
+        console.error("Error al crear admin:", err);
+        res.status(500).render("admin/form_usuario", {
+            layout: "admin/layout",
+            title: "Nuevo administrador",
+            error: "Error interno del servidor",
+            usuario: req.body
         });
     }
 }
 
-/**
- * Activa o desactiva un producto.
- * Responde con JSON.
- */
-export async function toggleProductoActivo(req, res) {
+/** ACTUALIZAR ADMIN */
+export async function actualizarAdmin(req, res) {
     try {
         const { id } = req.params;
-        const producto = await Producto.findByPk(id);
+        const { email, password, rol } = req.body;
 
-        if (!producto) {
-            return res.status(404).json({ error: 'Producto no encontrado' });
+        const admin = await UsuarioAdmin.findByPk(id);
+        if (!admin) {
+            return res.status(404).render("admin/form_usuario", {
+                layout: "admin/layout",
+                title: "Editar administrador",
+                error: "Administrador no encontrado",
+                usuario: req.body
+            });
         }
 
-        // Invierte el valor booleano
-        producto.activo = !producto.activo;
-        await producto.save();
+        const updates = { email, rol };
+        if (password) updates.password_hash = await bcrypt.hash(password, 10);
 
-        console.log(`✅ Estado cambiado: ${producto.nombre} (Activo: ${producto.activo})`);
+        await admin.update(updates);
 
-        // El frontend (admin-dashboard.js) espera un res.ok
-        res.status(200).json({
-            message: 'Estado actualizado',
-            activo: producto.activo
+        console.log(`✅ Administrador actualizado: ${email}`);
+        res.redirect("/admin/usuarios"); // 🔁 redirige al listado
+    } catch (err) {
+        console.error("Error al actualizar admin:", err);
+        res.status(500).render("admin/form_usuario", {
+            layout: "admin/layout",
+            title: "Editar administrador",
+            error: "Error interno del servidor",
+            usuario: req.body
         });
-
-    } catch (error) {
-        console.error('💥 Error al cambiar estado de producto:', error);
-        res.status(500).json({ error: 'Error interno del servidor' });
     }
 }
+/** ELIMINAR ADMIN */
 
-/**
- * Elimina un producto.
- * Responde con JSON.
- */
-export async function eliminarProducto(req, res) {
+export async function eliminarAdmin(req, res) {
     try {
         const { id } = req.params;
-        const producto = await Producto.findByPk(id);
 
-        if (!producto) {
-            return res.status(404).json({ error: 'Producto no encontrado' });
+        // 🔒 No permitir eliminar el propio usuario activo
+        if (req.session.adminId && Number(req.session.adminId) === Number(id)) {
+            return res.status(403).json({
+                error: "No puedes eliminar tu propio usuario mientras esté en sesión."
+            });
         }
 
-        // Elimina el producto de la base de datos
-        await producto.destroy();
+        const admin = await UsuarioAdmin.findByPk(id);
+        if (!admin) return res.status(404).json({ error: "Administrador no encontrado" });
 
-        console.log(`✅ Producto eliminado: ${producto.nombre}`);
-
-        // El frontend (admin-dashboard.js) espera un res.ok
-        res.status(200).json({ message: 'Producto eliminado exitosamente' });
-
-    } catch (error) {
-        console.error('💥 Error al eliminar producto:', error);
-        // Manejo de errores (ej: si el producto está en una Venta)
-        if (error.name === 'SequelizeForeignKeyConstraintError') {
-            return res.status(409).json({ error: 'No se puede eliminar el producto, está asociado a una venta.' });
-        }
-        res.status(500).json({ error: 'Error interno del servidor' });
+        await admin.destroy();
+        res.json({ message: "Administrador eliminado correctamente" });
+    } catch (err) {
+        console.error("Error al eliminar admin:", err);
+        res.status(500).json({ error: "Error interno del servidor" });
     }
 }
